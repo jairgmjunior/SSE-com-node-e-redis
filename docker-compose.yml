@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  app:
+    build: .
+    image: node:20-alpine
+    container_name: sse-node-redis-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: sh -c "npm install && npx nodemon index.js"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    networks:
+      - rede_sse
+
+  redis:
+    image: redis:latest
+    container_name: sse-node-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - rede_sse
+      
+networks:
+  rede_sse:
+    driver: bridge

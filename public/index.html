@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Node.js + Redis</title>
+  <style>
+    body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f4f6f8; }
+    .card { background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 12px 24px rgba(0,0,0,0.08); text-align: center; }
+    button { padding: 12px 20px; border: none; background: #0070f3; color: #fff; cursor: pointer; border-radius: 8px; font-size: 1rem; }
+    button:hover { background: #0059c7; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Node.js + Redis</h1>
+    <p>Receiving Message by SSE</p>    
+    <p id="message">Carregando... carregando...</p>
+  </div>
+
+  <script>
+    const eventSource = new EventSource('/stream');
+
+    eventSource.addEventListener('stock', (event) => {
+      document.getElementById('message').textContent = `${event.data}`;
+    });
+
+
+  </script>
+</body>
+</html>
