@@ -1,108 +1,108 @@
-# SSE Node.js + Redis
+# 🚀 SSE Node.js + Redis
 
-Este projeto é uma aplicação Node.js que usa Express e Redis para fornecer dados em tempo real via SSE (Server-Sent Events). O aplicativo está empacotado com Docker Compose para execução local com um serviço Redis.
+This project is a Node.js application that uses Express and Redis to provide real-time data via SSE (Server-Sent Events). The application is packaged with Docker Compose for local execution with a Redis service.
 
-## Visão geral
+## 🔍 Overview
 
-- `index.js` cria um servidor Express que:
-  - habilita CORS com `cors`
-  - serve arquivos estáticos da pasta `public`
-  - expõe a rota `/stream` como SSE
-- `public/index.html` abre um `EventSource` para `/stream` e escuta eventos do tipo `stock`
-- `docker-compose.yml` cria dois serviços:
-  - `app`: a aplicação Node.js
-  - `redis`: o servidor Redis
-- `package.json` define dependências e scripts
+- `index.js` creates an Express server that:
+  - enables CORS with `cors`
+  - serves static files from the `public` folder
+  - exposes the `/stream` route as SSE
+- `public/index.html` opens an `EventSource` to `/stream` and listens for `stock` events
+- `docker-compose.yml` creates two services:
+  - `app`: the Node.js application
+  - `redis`: the Redis server
+- `package.json` defines dependencies and scripts
 
-## Arquivos principais
+## 📁 Main files
 
-### `index.js`
+### `index.js` 🧩
 
-- importa `express`, `cors` e o cliente Redis (`redis`)
-- configura `express.static('public')` para servir `public/index.html`
-- configura a variável `redisUrl` a partir de `REDIS_URL`
-- a rota `/stream`:
-  - define os cabeçalhos SSE
-  - cria e conecta um cliente Redis em `redisUrl`
-  - se inscreve no canal `notifications`
-  - envia eventos SSE do tipo `stock` para o navegador
-  - mantém a conexão aberta até o cliente fechar
+- imports `express`, `cors` and the Redis client (`redis`)
+- configures `express.static('public')` to serve `public/index.html`
+- sets the `redisUrl` variable from `REDIS_URL`
+- the `/stream` route:
+  - sets SSE headers
+  - creates and connects a Redis client on `redisUrl`
+  - subscribes to the `notifications` channel
+  - sends SSE events of type `stock` to the browser
+  - keeps the connection open until the client closes it
 
-### `public/index.html`
+### `public/index.html` 🌐
 
-- é a página exibida no navegador
-- cria um `EventSource('/stream')`
-- usa `eventSource.addEventListener('stock', ...)` para atualizar o conteúdo do `<p id="message">`
-- exibe mensagens recebidas do servidor em tempo real
+- is the page displayed in the browser
+- creates an `EventSource('/stream')`
+- uses `eventSource.addEventListener('stock', ...)` to update the content of `<p id="message">`
+- displays messages received from the server in real time
 
-### `package.json`
+### `package.json` 📦
 
-Dependências:
+Dependencies:
 
-- `cors`: permite requisições cross-origin
-- `express`: servidor HTTP
-- `ioredis`: cliente Redis alternativo (ainda presente no projeto)
-- `redis`: cliente Redis usado no código atual
-- `nodemon`: ferramenta de desenvolvimento para reiniciar a aplicação ao detectar mudanças
+- `cors`: allows cross-origin requests
+- `express`: HTTP server
+- `ioredis`: alternative Redis client (still present in the project)
+- `redis`: Redis client used in the current code
+- `nodemon`: development tool to restart the app on changes
 
 Scripts:
 
 - `start`: `node index.js`
 - `dev`: `nodemon index.js`
 
-### `docker-compose.yml`
+### `docker-compose.yml` 🐳
 
-Configura dois serviços:
+Configures two services:
 
 - `app`
-  - build do Dockerfile local
-  - expõe a porta `3000`
-  - monta o código do projeto em `/usr/src/app`
-  - executa `npm install && npx nodemon index.js`
-  - usa `REDIS_URL=redis://redis:6379`
-  - depende do serviço `redis`
+  - builds from the local Dockerfile
+  - exposes port `3000`
+  - mounts the project code into `/usr/src/app`
+  - runs `npm install && npx nodemon index.js`
+  - uses `REDIS_URL=redis://redis:6379`
+  - depends on the `redis` service
 - `redis`
-  - usa a imagem oficial `redis:latest`
-  - expõe a porta `6379`
+  - uses the official `redis:latest` image
+  - exposes port `6379`
 
-Também define a rede `rede_sse` para que os containers se comuniquem.
+It also defines the `rede_sse` network so the containers can communicate.
 
-## Como executar
+## ▶️ How to run
 
-1. Abra o terminal na pasta do projeto:
-2. Inicie o Docker Compose:
+1. Open the terminal in the project folder:
+2. Start Docker Compose:
    ```bash
    docker-compose up --build
    ```
-3. Abra o navegador em:
+3. Open the browser at:
    ```
    http://localhost:3000/
    ```
 
-## O que acontece no browser
+## 🌐 What happens in the browser
 
-- a página carrega `public/index.html`
-- o navegador abre um `EventSource` para `/stream`
-- quando o servidor Redis publica no canal `notifications`, o servidor Node envia o evento SSE de nome `stock`
-- o navegador atualiza o texto de `#message` automaticamente
+- the page loads `public/index.html`
+- the browser opens an `EventSource` to `/stream`
+- when the Redis server publishes to the `notifications` channel, the Node server sends the SSE event named `stock`
+- the browser automatically updates the text of `#message`
 
-## Observações
+## 📝 Notes
 
-- a aplicação atual espera que o Redis publique mensagens no canal `notifications` use no terminal do redis:
+- the current application expects Redis to publish messages to the `notifications` channel. Use this in the Redis terminal:
 ```bash
-    127.0.0.1:6379> PUBLISH notifications "mensagem a ser enviada..."
+    127.0.0.1:6379> PUBLISH notifications "message to be sent..."
 ```
 
-- o Docker Compose usa `npx nodemon` para desenvolvimento, então alterações no código podem reiniciar o servidor automaticamente
+- Docker Compose uses `npx nodemon` for development, so changes in the code may automatically restart the server
 
-## Pontos de atenção
+## ⚠️ Points to note
 
-- o serviço Redis está acessível internamente como `redis:6379`
-- a URL padrão usada pelo app é `redis://redis:6379` quando `REDIS_URL` não está definido
-- o SSE atual envia eventos no formato:
+- the Redis service is accessible internally as `redis:6379`
+- the default URL used by the app is `redis://redis:6379` when `REDIS_URL` is not defined
+- the current SSE sends events in the format:
   ```text
   event: stock
-  data: <mensagem>
+  data: <message>
 
   ```
 
